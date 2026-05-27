@@ -2,7 +2,6 @@ package oopsrecoverygin
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/samber/oops"
 )
 
 // GinOopsRecovery creates a Gin middleware that recovers from panics and
@@ -43,23 +42,18 @@ import (
 //	    }
 //	  }
 //	})
-func GinOopsRecovery() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		// Use oops.Recoverf to catch panics and convert them to structured errors
-		// The callback function executes the rest of the middleware/handler chain
-		err := oops.Recoverf(func() {
-			c.Next() // Continue processing the request
-		}, "gin: panic recovered")
-		// If a panic was recovered, handle the resulting error
-		if err != nil {
-			// Add the error to the Gin context for logging or response handling
-			// This allows other middleware to access and process the recovered error
-			_ = c.Error(err)
+func GinOopsRecovery() gin.HandlerFunc { _ = "STUB: not implemented"; return *new(gin.HandlerFunc) }
 
-			// Abort the request with a 500 Internal Server Error status
-			// This prevents the request from continuing and ensures the client
-			// receives an appropriate error response
-			c.AbortWithStatus(500)
-		}
-	}
-}
+// Use oops.Recoverf to catch panics and convert them to structured errors
+// The callback function executes the rest of the middleware/handler chain
+
+// Continue processing the request
+
+// If a panic was recovered, handle the resulting error
+
+// Add the error to the Gin context for logging or response handling
+// This allows other middleware to access and process the recovered error
+
+// Abort the request with a 500 Internal Server Error status
+// This prevents the request from continuing and ensures the client
+// receives an appropriate error response

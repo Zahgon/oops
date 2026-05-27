@@ -1,9 +1,7 @@
 package oops
 
 import (
-	"fmt"
 	"reflect"
-	"time"
 )
 
 // dereferencePointers recursively dereferences pointer values in a map
@@ -27,28 +25,11 @@ import (
 //	result := dereferencePointers(data)
 //	// result["user"] will be User{Name: "John"} instead of *User
 //	// result["count"] will be 42 instead of *int
-func dereferencePointers(data map[string]any) map[string]any {
-	if !DereferencePointers {
-		return data
-	}
+func dereferencePointers(data map[string]any) map[string]any { _ = "STUB: not implemented"; return nil }
 
-	for key, value := range data {
-		// Fast path: only use reflect for types that could be pointers
-		switch value.(type) {
-		case nil, string, int, int8, int16, int32, int64,
-			uint, uint8, uint16, uint32, uint64,
-			float32, float64, bool, []byte,
-			map[string]any, []any:
-			continue // not a pointer, skip
-		}
-		val := reflect.ValueOf(value)
-		if val.Kind() == reflect.Pointer {
-			data[key] = dereferencePointerRecursive(val, 0)
-		}
-	}
+// Fast path: only use reflect for types that could be pointers
 
-	return data
-}
+// not a pointer, skip
 
 // dereferencePointerRecursive recursively dereferences pointer values
 // to extract their underlying data, with protection against infinite
@@ -71,40 +52,13 @@ func dereferencePointers(data map[string]any) map[string]any {
 //	result := dereferencePointerRecursive(val, 0)
 //	// result will be 42 (int), not ***int
 func dereferencePointerRecursive(val reflect.Value, depth int) (ret any) {
-	defer func() {
-		if r := recover(); r != nil {
-			ret = nil
-		}
-	}()
-
-	if !val.IsValid() {
-		return nil
-	}
-	if val.Kind() != reflect.Pointer {
-		return val.Interface()
-	}
-
-	if val.IsNil() {
-		return nil
-	}
-
-	// Prevent infinite recursion with circular references
-	if depth > 10 {
-		return val.Interface()
-	}
-
-	elem := val.Elem()
-	if !elem.IsValid() {
-		return nil
-	}
-
-	// Recursively handle nested pointers
-	if elem.Kind() == reflect.Pointer {
-		return dereferencePointerRecursive(elem, depth+1)
-	}
-
-	return elem.Interface()
+	_ = "STUB: not implemented"
+	return *new(any)
 }
+
+// Prevent infinite recursion with circular references
+
+// Recursively handle nested pointers
 
 // lazyMapEvaluation processes a map and evaluates any lazy evaluation
 // functions (functions with no arguments and one return value) to
@@ -130,18 +84,7 @@ func dereferencePointerRecursive(val reflect.Value, depth int) (ret any) {
 //	// result["timestamp"] will be the actual time.Time value
 //	// result["expensive"] will be the computed value
 //	// result["simple"] will remain "static value"
-func lazyMapEvaluation(data map[string]any) map[string]any {
-	for key, value := range data {
-		switch v := value.(type) {
-		case map[string]any:
-			data[key] = lazyMapEvaluation(v)
-		default:
-			data[key] = lazyValueEvaluation(value)
-		}
-	}
-
-	return data
-}
+func lazyMapEvaluation(data map[string]any) map[string]any { _ = "STUB: not implemented"; return nil }
 
 // lazyValueEvaluation evaluates a single value, checking if it's a
 // lazy evaluation function and executing it if so.
@@ -166,49 +109,16 @@ func lazyMapEvaluation(data map[string]any) map[string]any {
 //	result := lazyValueEvaluation(value)
 //	// result will be "static string" (unchanged)
 func lazyValueEvaluation(value any) (ret any) {
+	_ = "STUB: not implemented"
 	// Fast path: common types are never lazy evaluation functions
-	switch value.(type) {
-	case nil, string, int, int8, int16, int32, int64,
-		uint, uint8, uint16, uint32, uint64,
-		float32, float64, bool, []byte,
-		time.Time, time.Duration:
-		return value
-	}
-
-	defer func() {
-		if r := recover(); r != nil {
-			ret = fmt.Sprintf("panic in lazy evaluation: %v", r)
-		}
-	}()
-
-	v := reflect.ValueOf(value)
-	if !v.IsValid() || v.Kind() != reflect.Func {
-		return value
-	}
-
-	// Check if this is a lazy evaluation function (no args, one return)
-	if v.Type().NumIn() != 0 || v.Type().NumOut() != 1 {
-		return value
-	}
-
-	return v.Call([]reflect.Value{})[0].Interface()
+	return *new(any)
 }
+
+// Check if this is a lazy evaluation function (no args, one return)
 
 // recursive is a helper function that traverses the error chain
 // and applies a function to each OopsError in the chain.
-func recursive(err OopsError, tap func(OopsError) bool) {
-	if !tap(err) {
-		return
-	}
-
-	if err.err == nil {
-		return
-	}
-
-	if child, ok := AsOops(err.err); ok {
-		recursive(child, tap)
-	}
-}
+func recursive(err OopsError, tap func(OopsError) bool) { _ = "STUB: not implemented"; return }
 
 // // recursive is a helper function that traverses the error chain
 // // and applies a function to each OopsError in the chain.
@@ -246,15 +156,8 @@ func recursive(err OopsError, tap func(OopsError) bool) {
 //	})
 //	// Returns the error code from the deepest error in the chain
 func getDeepestErrorAttribute[T comparable](err OopsError, getter func(OopsError) T) T {
-	if err.err == nil {
-		return getter(err)
-	}
-
-	if child, ok := AsOops(err.err); ok {
-		return coalesceOrEmpty(getDeepestErrorAttribute(child, getter), getter(err))
-	}
-
-	return getter(err)
+	_ = "STUB: not implemented"
+	return *new(T)
 }
 
 // mergeNestedErrorMap merges maps from an error chain, with deeper errors
@@ -273,33 +176,18 @@ func getDeepestErrorAttribute[T comparable](err OopsError, getter func(OopsError
 //	// Returns a merged map with context from all errors in the chain,
 //	// with deeper errors overriding shallower ones.
 func mergeNestedErrorMap(err OopsError, getter func(OopsError) map[string]any) map[string]any {
+	_ = "STUB: not implemented"
 	// Collect all maps from the chain (shallower first, deeper last).
-	var maps []map[string]any
-	collectMaps(err, getter, &maps)
-
-	if len(maps) == 0 {
-		return map[string]any{}
-	}
-
-	// Merge into a single result: deeper maps (appended last) overwrite
-	// shallower ones, preserving the original semantics.
-	// Preallocate with the first map's length as a rough capacity hint.
-	result := make(map[string]any, len(maps[0]))
-	for _, m := range maps {
-		for k, v := range m {
-			result[k] = v
-		}
-	}
-	return result
+	return nil
 }
+
+// Merge into a single result: deeper maps (appended last) overwrite
+// shallower ones, preserving the original semantics.
+// Preallocate with the first map's length as a rough capacity hint.
 
 // collectMaps appends maps from the error chain to result in shallow-to-deep
 // order so that the final merge loop gives deeper errors higher precedence.
 func collectMaps(err OopsError, getter func(OopsError) map[string]any, result *[]map[string]any) {
-	if m := getter(err); len(m) > 0 {
-		*result = append(*result, m)
-	}
-	if child, ok := AsOops(err.err); ok {
-		collectMaps(child, getter, result)
-	}
+	_ = "STUB: not implemented"
+	return
 }

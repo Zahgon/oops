@@ -22,8 +22,8 @@ const contextKeyOops = contextKey("oops")
 // Thread Safety: This function is thread-safe and can be called concurrently
 // on the same context from multiple goroutines.
 func getBuilderFromContext(ctx context.Context) (OopsErrorBuilder, bool) {
-	b, ok := ctx.Value(contextKeyOops).(OopsErrorBuilder)
-	return b, ok
+	_ = "STUB: not implemented"
+	return *new(OopsErrorBuilder), false
 }
 
 // WithBuilder stores an OopsErrorBuilder in a Go context for later retrieval.
@@ -66,5 +66,6 @@ func getBuilderFromContext(ctx context.Context) (OopsErrorBuilder, bool) {
 //	  // that were set in the middleware
 //	}
 func WithBuilder(ctx context.Context, builder OopsErrorBuilder) context.Context {
-	return context.WithValue(ctx, contextKeyOops, builder)
+	_ = "STUB: not implemented"
+	return *new(context.Context)
 }

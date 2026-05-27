@@ -1,7 +1,5 @@
 package oops
 
-import "errors"
-
 // AsOops checks if an error is an oops.OopsError instance and returns it if so.
 // This function is an alias to errors.As and provides a convenient way to
 // type-assert errors to oops.OopsError without importing the errors package.
@@ -31,11 +29,7 @@ import "errors"
 //	  // Handle database errors specifically
 //	  retryOperation()
 //	}
-func AsOops(err error) (OopsError, bool) {
-	var e OopsError
-	ok := errors.As(err, &e)
-	return e, ok
-}
+func AsOops(err error) (OopsError, bool) { _ = "STUB: not implemented"; return *new(OopsError), false }
 
 // AsError is a generic helper equivalent to errors.As, without requiring
 // the caller to declare a typed variable first.
@@ -45,8 +39,4 @@ func AsOops(err error) (OopsError, bool) {
 //	if myErr, ok := oops.AsError[*MyError](err); ok {
 //	  // use myErr directly
 //	}
-func AsError[T error](err error) (T, bool) {
-	var e T
-	ok := errors.As(err, &e)
-	return e, ok
-}
+func AsError[T error](err error) (T, bool) { _ = "STUB: not implemented"; return *new(T), false }

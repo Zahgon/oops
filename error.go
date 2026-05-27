@@ -2,14 +2,10 @@
 package oops
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
-	"net/http/httputil"
 	"runtime"
-	"strings"
 	"sync"
 	"time"
 
@@ -141,41 +137,16 @@ type OopsError struct {
 // Unwrap returns the underlying error that this OopsError wraps.
 // This method implements the errors.Wrapper interface.
 func (o OopsError) Unwrap() error {
-	return o.err
+	_ = "STUB: not implemented"
+
+	// toLayer converts the current OopsError into an OopsErrorLayer containing
+	// only the attributes set at this specific layer. No chain traversal is performed.
+	// Map values are processed the same way as in ToMap: lazy functions are evaluated
+	// and pointer values are dereferenced.
+	return nil
 }
 
-// toLayer converts the current OopsError into an OopsErrorLayer containing
-// only the attributes set at this specific layer. No chain traversal is performed.
-// Map values are processed the same way as in ToMap: lazy functions are evaluated
-// and pointer values are dereferenced.
-func (o OopsError) toLayer() *OopsErrorLayer {
-	layer := &OopsErrorLayer{
-		Code:       o.code,
-		Duration:   o.duration,
-		Domain:     o.domain,
-		Tags:       o.tags,
-		Context:    dereferencePointers(lazyMapEvaluation(o.context)),
-		Trace:      o.trace,
-		Span:       o.span,
-		Hint:       o.hint,
-		Public:     o.public,
-		Owner:      o.owner,
-		UserID:     o.userID,
-		UserData:   dereferencePointers(lazyMapEvaluation(o.userData)),
-		TenantID:   o.tenantID,
-		TenantData: dereferencePointers(lazyMapEvaluation(o.tenantData)),
-	}
-	if !o.time.IsZero() {
-		layer.Time = o.time.In(Local)
-	}
-	if o.req != nil {
-		layer.Request = o.req.A
-	}
-	if o.res != nil {
-		layer.Response = o.res.A
-	}
-	return layer
-}
+func (o OopsError) toLayer() *OopsErrorLayer { _ = "STUB: not implemented"; return nil }
 
 // Layers returns a slice of all OopsError layers in the error chain,
 // from outermost to innermost. Each element represents one wrapping layer
@@ -185,14 +156,7 @@ func (o OopsError) toLayer() *OopsErrorLayer {
 // Only OopsError layers are included; non-OopsError errors in the chain
 // (e.g. a plain fmt.Errorf or sentinel error at the root) are skipped.
 // Use Unwrap() on the innermost layer to access the underlying error.
-func (o OopsError) Layers() []*OopsErrorLayer {
-	var layers []*OopsErrorLayer
-	recursive(o, func(e OopsError) bool {
-		layers = append(layers, e.toLayer())
-		return true
-	})
-	return layers
-}
+func (o OopsError) Layers() []*OopsErrorLayer { _ = "STUB: not implemented"; return nil }
 
 // Is implements the errors.Is interface.
 //
@@ -203,128 +167,48 @@ func (o OopsError) Layers() []*OopsErrorLayer {
 // Note: errors.Is is designed for sentinel value matching (e.g. io.EOF).
 // To check whether an error in the chain is an OopsError, prefer errors.As
 // or oops.AsOops instead.
-func (o OopsError) Is(err error) bool {
-	if other, ok := err.(OopsError); ok && o.span == other.span {
-		return true
-	}
-
-	return errors.Is(o.err, err)
-}
+func (o OopsError) Is(err error) bool { _ = "STUB: not implemented"; return false }
 
 // Error returns the error message without additional context.
 // This method implements the error interface.
 // If the error wraps another error, it returns "message: wrapped_error".
 // Otherwise, it returns just the message.
-func (o OopsError) Error() string {
-	if o.err != nil {
-		if o.msg == "" {
-			return o.err.Error()
-		}
-
-		return o.msg + ": " + o.err.Error()
-	}
-
-	return o.msg
-}
+func (o OopsError) Error() string { _ = "STUB: not implemented"; return "" }
 
 // Code returns the error code from the deepest error in the chain.
 // Error codes are machine-readable identifiers that can be used for
 // programmatic error handling and cross-service error correlation.
-func (o OopsError) Code() any {
-	return getDeepestErrorCode(o)
-}
+func (o OopsError) Code() any { _ = "STUB: not implemented"; return *new(any) }
 
-func getDeepestErrorCode(err OopsError) any {
-	if err.err == nil {
-		return err.code
-	}
-
-	if child, ok := AsOops(err.err); ok {
-		deepest := getDeepestErrorCode(child)
-		if deepest != nil {
-			return deepest
-		}
-	}
-
-	return err.code
-}
+func getDeepestErrorCode(err OopsError) any { _ = "STUB: not implemented"; return *new(any) }
 
 // Time returns the timestamp when the error occurred.
 // Returns the time from the deepest error in the chain.
-func (o OopsError) Time() time.Time {
-	return getDeepestErrorAttribute(
-		o,
-		func(e OopsError) time.Time {
-			return e.time
-		},
-	)
-}
+func (o OopsError) Time() time.Time { _ = "STUB: not implemented"; return *new(time.Time) }
 
 // Duration returns the duration associated with the error.
 // Returns the duration from the deepest error in the chain.
-func (o OopsError) Duration() time.Duration {
-	return getDeepestErrorAttribute(
-		o,
-		func(e OopsError) time.Duration {
-			return e.duration
-		},
-	)
-}
+func (o OopsError) Duration() time.Duration { _ = "STUB: not implemented"; return *new(time.Duration) }
 
 // Domain returns the domain/feature category of the error.
 // Returns the domain from the deepest error in the chain.
-func (o OopsError) Domain() string {
-	return getDeepestErrorAttribute(
-		o,
-		func(e OopsError) string {
-			return e.domain
-		},
-	)
-}
+func (o OopsError) Domain() string { _ = "STUB: not implemented"; return "" }
 
 // Tags returns all unique tags from the error chain.
 // Tags are merged from all errors in the chain and deduplicated.
-func (o OopsError) Tags() []string {
-	tags := make([]string, 0, 8) // reasonable initial capacity for tags
+func (o OopsError) Tags() []string { _ = "STUB: not implemented"; return nil }
 
-	recursive(o, func(e OopsError) bool {
-		tags = append(tags, e.tags...)
-		return true
-	})
-
-	return lo.Uniq(tags)
-}
+// reasonable initial capacity for tags
 
 // HasTag checks if the error or any of its wrapped errors contain the specified tag.
 // This is useful for conditional error handling based on error categories.
-func (o OopsError) HasTag(tag string) bool {
-	found := false
-	recursive(o, func(e OopsError) bool {
-		if lo.Contains(e.tags, tag) {
-			found = true
-		}
-		return !found
-	})
-
-	return found
-}
+func (o OopsError) HasTag(tag string) bool { _ = "STUB: not implemented"; return false }
 
 // Context returns a flattened key-value context map from the error chain.
 // Context from all errors in the chain is merged, with later errors taking precedence.
 // Pointer values are dereferenced if DereferencePointers is enabled.
 // Lazy evaluation functions are executed to get their values.
-func (o OopsError) Context() map[string]any {
-	return dereferencePointers(
-		lazyMapEvaluation(
-			mergeNestedErrorMap(
-				o,
-				func(e OopsError) map[string]any {
-					return e.context
-				},
-			),
-		),
-	)
-}
+func (o OopsError) Context() map[string]any { _ = "STUB: not implemented"; return nil }
 
 // Trace returns the transaction/trace/correlation ID.
 // An ID is auto-generated at error creation time if none was set explicitly.
@@ -332,603 +216,144 @@ func (o OopsError) Context() map[string]any {
 // Explicit traces (set via .Trace("id")) always take precedence over
 // auto-generated ones, regardless of chain depth. Among traces of the same
 // kind, the deepest one in the chain wins.
-func (o OopsError) Trace() string {
-	return getTraceFromChain(o)
-}
+func (o OopsError) Trace() string { _ = "STUB: not implemented"; return "" }
 
 // getTraceFromChain walks the full error chain and returns the deepest
 // explicit trace, falling back to the deepest auto-generated trace.
-func getTraceFromChain(err OopsError) string {
-	explicit := ""
-	auto := ""
+func getTraceFromChain(err OopsError) string { _ = "STUB: not implemented"; return "" }
 
-	// recursive visits outer→inner, so each write overwrites with a deeper value.
-	recursive(err, func(e OopsError) bool {
-		if e.trace == "" {
-			return true
-		}
-		if e.traceAutoGenerated {
-			auto = e.trace
-		} else {
-			explicit = e.trace
-		}
-		return true
-	})
-
-	if explicit != "" {
-		return explicit
-	}
-	return auto
-}
+// recursive visits outer→inner, so each write overwrites with a deeper value.
 
 // Span returns the current span identifier.
 // Unlike other attributes, span returns the current error's span, not the deepest one.
 func (o OopsError) Span() string {
-	return o.span
+	_ = "STUB: not implemented"
+
+	// Hint returns a debugging hint for resolving the error.
+	// Returns the hint from the deepest error in the chain.
+	return ""
 }
 
-// Hint returns a debugging hint for resolving the error.
-// Returns the hint from the deepest error in the chain.
-func (o OopsError) Hint() string {
-	return getDeepestErrorAttribute(
-		o,
-		func(e OopsError) string {
-			return e.hint
-		},
-	)
-}
+func (o OopsError) Hint() string { _ = "STUB: not implemented"; return "" }
 
 // Public returns a user-safe error message.
 // Returns the public message from the deepest error in the chain.
-func (o OopsError) Public() string {
-	return getDeepestErrorAttribute(
-		o,
-		func(e OopsError) string {
-			return e.public
-		},
-	)
-}
+func (o OopsError) Public() string { _ = "STUB: not implemented"; return "" }
 
 // Owner returns the name/email of the person/team responsible for handling this error.
 // Returns the owner from the deepest error in the chain.
-func (o OopsError) Owner() string {
-	return getDeepestErrorAttribute(
-		o,
-		func(e OopsError) string {
-			return e.owner
-		},
-	)
-}
+func (o OopsError) Owner() string { _ = "STUB: not implemented"; return "" }
 
 // User returns the user ID and associated user data.
 // Returns the user information from the deepest error in the chain.
-func (o OopsError) User() (string, map[string]any) {
-	userID := getDeepestErrorAttribute(
-		o,
-		func(e OopsError) string {
-			return e.userID
-		},
-	)
-
-	userData := dereferencePointers(
-		lazyMapEvaluation(
-			mergeNestedErrorMap(
-				o,
-				func(e OopsError) map[string]any {
-					return e.userData
-				},
-			),
-		),
-	)
-
-	return userID, userData
-}
+func (o OopsError) User() (string, map[string]any) { _ = "STUB: not implemented"; return "", nil }
 
 // Tenant returns the tenant ID and associated tenant data.
 // Returns the tenant information from the deepest error in the chain.
-func (o OopsError) Tenant() (string, map[string]any) {
-	tenantID := getDeepestErrorAttribute(
-		o,
-		func(e OopsError) string {
-			return e.tenantID
-		},
-	)
-
-	tenantData := dereferencePointers(
-		lazyMapEvaluation(
-			mergeNestedErrorMap(
-				o,
-				func(e OopsError) map[string]any {
-					return e.tenantData
-				},
-			),
-		),
-	)
-
-	return tenantID, tenantData
-}
+func (o OopsError) Tenant() (string, map[string]any) { _ = "STUB: not implemented"; return "", nil }
 
 // Request returns the associated HTTP request.
 // Returns the request from the deepest error in the chain.
-func (o OopsError) Request() *http.Request {
-	t := o.request()
-	if t != nil {
-		return t.A
-	}
-
-	return nil
-}
+func (o OopsError) Request() *http.Request { _ = "STUB: not implemented"; return nil }
 
 // request returns the internal request tuple with body inclusion flag.
-func (o OopsError) request() *lo.Tuple2[*http.Request, bool] {
-	return getDeepestErrorAttribute(
-		o,
-		func(e OopsError) *lo.Tuple2[*http.Request, bool] {
-			return e.req
-		},
-	)
-}
+func (o OopsError) request() *lo.Tuple2[*http.Request, bool] { _ = "STUB: not implemented"; return nil }
 
 // Response returns the associated HTTP response.
 // Returns the response from the deepest error in the chain.
-func (o OopsError) Response() *http.Response {
-	t := o.response()
-	if t != nil {
-		return t.A
-	}
-
-	return nil
-}
+func (o OopsError) Response() *http.Response { _ = "STUB: not implemented"; return nil }
 
 // response returns the internal response tuple with body inclusion flag.
 func (o OopsError) response() *lo.Tuple2[*http.Response, bool] {
-	return getDeepestErrorAttribute(
-		o,
-		func(e OopsError) *lo.Tuple2[*http.Response, bool] {
-			return e.res
-		},
-	)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // rawBlocksWithCache returns the filtered frame blocks shared by Stacktrace and Sources.
 // When a cache is present the traversal runs at most once; subsequent calls return
 // the cached slice directly.
-func (o OopsError) rawBlocksWithCache() []outputBlock {
-	if o.cacheOnce == nil || o.cacheBlocks == nil {
-		return o.rawBlocks()
-	}
-	o.cacheOnce.Do(func() {
-		*o.cacheBlocks = o.rawBlocks()
-	})
-	return *o.cacheBlocks
-}
+func (o OopsError) rawBlocksWithCache() []outputBlock { _ = "STUB: not implemented"; return nil }
 
 // rawBlocks performs the actual recursive frame traversal and applyFrameSkip filtering.
-func (o OopsError) rawBlocks() []outputBlock {
-	var blocks []outputBlock
-	recursive(o, func(e OopsError) bool {
-		if e.stacktrace != nil {
-			filteredFrames := applyFrameSkip(e.stacktrace.frames)
-			if len(filteredFrames) > 0 {
-				blocks = append(blocks, outputBlock{e.err, e.msg, filteredFrames})
-			}
-		}
-		return true
-	})
-	return blocks
-}
+func (o OopsError) rawBlocks() []outputBlock { _ = "STUB: not implemented"; return nil }
 
 // Stacktrace returns a formatted string representation of the error's stack trace.
 // The stack trace shows the call hierarchy leading to the error, excluding
 // frames from the Go standard library and this package.
 // The stacktrace is basically written from the bottom to the top, in order to dedup frames.
 // It support recursive code.
-func (o OopsError) Stacktrace() string {
-	blocks := o.rawBlocksWithCache()
-	if len(blocks) == 0 {
-		return ""
-	}
-
-	stBlocks := make([]lo.Tuple3[error, string, []oopsStacktraceFrame], len(blocks))
-	for i, b := range blocks {
-		stBlocks[i] = lo.T3(b.err, b.msg, b.frames)
-	}
-	return "Oops: " + strings.Join(framesToStacktraceBlocks(stBlocks), "\nThrown: ")
-}
+func (o OopsError) Stacktrace() string { _ = "STUB: not implemented"; return "" }
 
 // StackFrames returns the raw stack frames as runtime.Frame objects.
 // This is useful for custom stack trace formatting or analysis.
-func (o OopsError) StackFrames() []runtime.Frame {
-	if o.stacktrace == nil {
-		return nil
-	}
-	filtered := applyFrameSkip(o.stacktrace.frames)
-	frames := make([]runtime.Frame, 0, len(filtered))
-	for _, f := range filtered {
-		frames = append(frames, runtime.Frame{
-			PC:       f.pc,
-			File:     f.file,
-			Line:     f.line,
-			Function: f.function,
-		})
-	}
-	return frames
-}
+func (o OopsError) StackFrames() []runtime.Frame { _ = "STUB: not implemented"; return nil }
 
 // Sources returns formatted source code fragments around the error location.
 // This provides context about the code that caused the error, which is
 // particularly useful for debugging. The output includes line numbers and
 // highlights the exact line where the error occurred.
-func (o OopsError) Sources() string {
-	blocks := o.rawBlocksWithCache()
-	if len(blocks) == 0 {
-		return ""
-	}
-
-	srcBlocks := make([]lo.Tuple2[string, *oopsStacktrace], len(blocks))
-	for i, b := range blocks {
-		srcBlocks[i] = lo.T2(b.msg, &oopsStacktrace{frames: b.frames})
-	}
-	return "Oops: " + strings.Join(framesToSourceBlocks(srcBlocks), "\n\nThrown: ")
-}
+func (o OopsError) Sources() string { _ = "STUB: not implemented"; return "" }
 
 // LogValuer returns a slog.Value representation of the error.
 // This method implements the slog.LogValuer interface for structured logging.
 //
 // Deprecated: Use LogValue instead.
 func (o OopsError) LogValuer() slog.Value {
-	return o.LogValue()
+	_ = "STUB: not implemented"
+	return *
+
+	// LogValue returns a slog.Value representation of the error for structured logging.
+	// This method implements the slog.LogValuer interface and provides a flattened
+	// representation of the error's context and metadata suitable for logging systems.
+	new(slog.Value)
 }
 
-// LogValue returns a slog.Value representation of the error for structured logging.
-// This method implements the slog.LogValuer interface and provides a flattened
-// representation of the error's context and metadata suitable for logging systems.
-func (o OopsError) LogValue() slog.Value { //nolint:gocyclo
-	attrs := make([]slog.Attr, 0, 16)
-	attrs = append(attrs, slog.String("message", o.msg))
-
-	if err := o.Error(); err != "" {
-		attrs = append(attrs, slog.String("err", err))
-	}
-
-	if code := o.Code(); code != nil {
-		attrs = append(attrs, slog.Any("code", code))
-	}
-
-	if t := o.Time(); t != (time.Time{}) {
-		attrs = append(attrs, slog.Time("time", t.In(Local)))
-	}
-
-	if duration := o.Duration(); duration != 0 {
-		attrs = append(attrs, slog.Duration("duration", duration))
-	}
-
-	if domain := o.Domain(); domain != "" {
-		attrs = append(attrs, slog.String("domain", domain))
-	}
-
-	if tags := o.Tags(); len(tags) > 0 {
-		attrs = append(attrs, slog.Any("tags", tags))
-	}
-
-	if trace := o.Trace(); trace != "" {
-		attrs = append(attrs, slog.String("trace", trace))
-	}
-
-	// if span := o.Span(); span != "" {
-	// 	attrs = append(attrs, slog.String("span", span))
-	// }
-
-	if hint := o.Hint(); hint != "" {
-		attrs = append(attrs, slog.String("hint", hint))
-	}
-
-	if public := o.Public(); public != "" {
-		attrs = append(attrs, slog.String("public", public))
-	}
-
-	if owner := o.Owner(); owner != "" {
-		attrs = append(attrs, slog.String("owner", owner))
-	}
-
-	if context := o.Context(); len(context) > 0 {
-		attrs = append(attrs,
-			slog.Group(
-				"context",
-				lo.ToAnySlice(
-					lo.MapToSlice(context, slog.Any),
-				)...,
-			),
-		)
-	}
-
-	if userID, userData := o.User(); userID != "" || len(userData) > 0 {
-		userPayload := []slog.Attr{}
-		if userID != "" {
-			userPayload = append(userPayload, slog.String("id", userID))
-			userPayload = append(
-				userPayload,
-				lo.MapToSlice(userData, slog.Any)...,
-			)
-		}
-
-		attrs = append(attrs, slog.Group("user", lo.ToAnySlice(userPayload)...))
-	}
-
-	if tenantID, tenantData := o.Tenant(); tenantID != "" || len(tenantData) > 0 {
-		tenantPayload := []slog.Attr{}
-		if tenantID != "" {
-			tenantPayload = append(tenantPayload, slog.String("id", tenantID))
-			tenantPayload = append(
-				tenantPayload,
-				lo.MapToSlice(tenantData, slog.Any)...,
-			)
-		}
-
-		attrs = append(attrs, slog.Group("tenant", lo.ToAnySlice(tenantPayload)...))
-	}
-
-	if req := o.request(); req != nil {
-		dump, e := httputil.DumpRequestOut(req.A, req.B)
-		if e == nil {
-			attrs = append(attrs, slog.String("request", string(dump)))
-		}
-	}
-
-	if res := o.response(); res != nil {
-		dump, e := httputil.DumpResponse(res.A, res.B)
-		if e == nil {
-			attrs = append(attrs, slog.String("response", string(dump)))
-		}
-	}
-
-	if stacktrace := o.Stacktrace(); stacktrace != "" {
-		attrs = append(attrs, slog.String("stacktrace", stacktrace))
-	}
-
-	if sources := o.Sources(); sources != "" && !SourceFragmentsHidden {
-		attrs = append(attrs, slog.String("sources", sources))
-	}
-
-	return slog.GroupValue(attrs...)
+func (o OopsError) LogValue() slog.Value {
+	_ = "STUB: not implemented" //nolint:gocyclo
+	return *new(slog.Value)
 }
+
+// if span := o.Span(); span != "" {
+// 	attrs = append(attrs, slog.String("span", span))
+// }
 
 // ToMap converts the error to a map representation suitable for JSON serialization.
 // This method provides a flattened view of all error attributes and is useful
 // for logging, debugging, and cross-service error transmission.
-func (o OopsError) ToMap() map[string]any { //nolint:gocyclo
-	payload := map[string]any{}
-
-	if err := o.Error(); err != "" {
-		payload["error"] = err
-	}
-
-	if code := o.Code(); code != nil {
-		payload["code"] = code
-	}
-
-	if t := o.Time(); t != (time.Time{}) {
-		payload["time"] = t.In(Local)
-	}
-
-	if duration := o.Duration(); duration != 0 {
-		payload["duration"] = duration.String()
-	}
-
-	if domain := o.Domain(); domain != "" {
-		payload["domain"] = domain
-	}
-
-	if tags := o.Tags(); len(tags) > 0 {
-		payload["tags"] = tags
-	}
-
-	if context := o.Context(); len(context) > 0 {
-		payload["context"] = context
-	}
-
-	if trace := o.Trace(); trace != "" {
-		payload["trace"] = trace
-	}
-
-	// if span := o.Span(); span != "" {
-	// 	payload["span"] = span
-	// }
-
-	if hint := o.Hint(); hint != "" {
-		payload["hint"] = hint
-	}
-
-	if public := o.Public(); public != "" {
-		payload["public"] = public
-	}
-
-	if owner := o.Owner(); owner != "" {
-		payload["owner"] = owner
-	}
-
-	if userID, userData := o.User(); userID != "" || len(userData) > 0 {
-		user := lo.Assign(map[string]any{}, userData)
-		if userID != "" {
-			user["id"] = userID
-		}
-
-		payload["user"] = user
-	}
-
-	if tenantID, tenantData := o.Tenant(); tenantID != "" || len(tenantData) > 0 {
-		tenant := lo.Assign(map[string]any{}, tenantData)
-		if tenantID != "" {
-			tenant["id"] = tenantID
-		}
-
-		payload["tenant"] = tenant
-	}
-
-	if req := o.request(); req != nil {
-		dump, e := httputil.DumpRequestOut(req.A, req.B)
-		if e == nil {
-			payload["request"] = string(dump)
-		}
-	}
-
-	if res := o.response(); res != nil {
-		dump, e := httputil.DumpResponse(res.A, res.B)
-		if e == nil {
-			payload["response"] = string(dump)
-		}
-	}
-
-	if stacktrace := o.Stacktrace(); stacktrace != "" {
-		payload["stacktrace"] = stacktrace
-	}
-
-	if sources := o.Sources(); sources != "" && !SourceFragmentsHidden {
-		payload["sources"] = sources
-	}
-
-	return payload
+func (o OopsError) ToMap() map[string]any {
+	_ = "STUB: not implemented" //nolint:gocyclo
+	return nil
 }
+
+// if span := o.Span(); span != "" {
+// 	payload["span"] = span
+// }
 
 // MarshalJSON implements the json.Marshaler interface.
 // This allows OopsError to be directly serialized to JSON.
-func (o OopsError) MarshalJSON() ([]byte, error) {
-	return json.Marshal(o.ToMap())
-}
+func (o OopsError) MarshalJSON() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // Format implements the fmt.Formatter interface for custom formatting.
 // Supports the following format verbs:
 // - %v: standard error message
 // - %+v: verbose format with stack trace and context
 // - %#v: Go syntax representation.
-func (o OopsError) Format(s fmt.State, verb rune) {
-	switch verb {
-	case 'v':
-		if s.Flag('+') {
-			// Verbose format with stack trace and context
-			_, _ = fmt.Fprint(s, o.formatVerbose())
-		} else {
-			// Standard format
-			_, _ = fmt.Fprint(s, o.formatSummary())
-		}
-	case 's':
-		_, _ = fmt.Fprint(s, o.Error())
-	case 'q':
-		_, _ = fmt.Fprintf(s, "%q", o.Error())
-	default:
-		_, _ = fmt.Fprint(s, o.formatSummary())
-	}
-}
+func (o OopsError) Format(s fmt.State, verb rune) { _ = "STUB: not implemented"; return }
+
+// Verbose format with stack trace and context
+
+// Standard format
 
 // formatVerbose returns a detailed string representation of the error
 // including all context, stack trace, and source code fragments.
-func (o *OopsError) formatVerbose() string { //nolint:gocyclo
-	var output strings.Builder
-	_, _ = fmt.Fprintf(&output, "Oops: %s\n", o.Error())
-
-	if code := o.Code(); code != nil {
-		_, _ = fmt.Fprintf(&output, "Code: %v\n", code)
-	}
-
-	if t := o.Time(); t != (time.Time{}) {
-		_, _ = fmt.Fprintf(&output, "Time: %s\n", t.In(Local))
-	}
-
-	if duration := o.Duration(); duration != 0 {
-		_, _ = fmt.Fprintf(&output, "Duration: %s\n", duration.String())
-	}
-
-	if domain := o.Domain(); domain != "" {
-		_, _ = fmt.Fprintf(&output, "Domain: %s\n", domain)
-	}
-
-	if tags := o.Tags(); len(tags) > 0 {
-		_, _ = fmt.Fprintf(&output, "Tags: %s\n", strings.Join(tags, ", "))
-	}
-
-	if trace := o.Trace(); trace != "" {
-		_, _ = fmt.Fprintf(&output, "Trace: %s\n", trace)
-	}
-
-	// if span := o.Span(); span != "" {
-	// 	_, _ = fmt.Fprintf(&output, "Span: %s\n", span)
-	// }
-
-	if hint := o.Hint(); hint != "" {
-		_, _ = fmt.Fprintf(&output, "Hint: %s\n", hint)
-	}
-
-	if owner := o.Owner(); owner != "" {
-		_, _ = fmt.Fprintf(&output, "Owner: %s\n", owner)
-	}
-
-	if context := o.Context(); len(context) > 0 {
-		output.WriteString("Context:\n")
-		for k, v := range context {
-			_, _ = fmt.Fprintf(&output, "  * %s: %v\n", k, v)
-		}
-	}
-
-	if userID, userData := o.User(); userID != "" || len(userData) > 0 {
-		output.WriteString("User:\n")
-
-		if userID != "" {
-			_, _ = fmt.Fprintf(&output, "  * id: %s\n", userID)
-		}
-
-		for k, v := range userData {
-			_, _ = fmt.Fprintf(&output, "  * %s: %v\n", k, v)
-		}
-	}
-
-	if tenantID, tenantData := o.Tenant(); tenantID != "" || len(tenantData) > 0 {
-		output.WriteString("Tenant:\n")
-
-		if tenantID != "" {
-			_, _ = fmt.Fprintf(&output, "  * id: %s\n", tenantID)
-		}
-
-		for k, v := range tenantData {
-			_, _ = fmt.Fprintf(&output, "  * %s: %v\n", k, v)
-		}
-	}
-
-	if req := o.request(); req != nil {
-		dump, e := httputil.DumpRequestOut(req.A, req.B)
-		if e == nil {
-			lines := strings.Split(string(dump), "\n")
-			lines = lo.Map(lines, func(line string, _ int) string {
-				return "  * " + line
-			})
-			_, _ = fmt.Fprintf(&output, "Request:\n%s\n", strings.Join(lines, "\n"))
-		}
-	}
-
-	if res := o.response(); res != nil {
-		dump, e := httputil.DumpResponse(res.A, res.B)
-		if e == nil {
-			lines := strings.Split(string(dump), "\n")
-			lines = lo.Map(lines, func(line string, _ int) string {
-				return "  * " + line
-			})
-			_, _ = fmt.Fprintf(&output, "Response:\n%s\n", strings.Join(lines, "\n"))
-		}
-	}
-
-	if stacktrace := o.Stacktrace(); stacktrace != "" {
-		lines := strings.Split(stacktrace, "\n")
-		stacktrace = "  " + strings.Join(lines, "\n  ")
-		_, _ = fmt.Fprintf(&output, "Stacktrace:\n%s\n", stacktrace)
-	}
-
-	if sources := o.Sources(); sources != "" && !SourceFragmentsHidden {
-		_, _ = fmt.Fprintf(&output, "Sources:\n%s\n", sources)
-	}
-
-	return output.String()
+func (o *OopsError) formatVerbose() string {
+	_ = "STUB: not implemented" //nolint:gocyclo
+	return ""
 }
+
+// if span := o.Span(); span != "" {
+// 	_, _ = fmt.Fprintf(&output, "Span: %s\n", span)
+// }
 
 // formatSummary returns a brief summary of the error for logging.
-func (o *OopsError) formatSummary() string {
-	return o.Error()
-}
+func (o *OopsError) formatSummary() string { _ = "STUB: not implemented"; return "" }

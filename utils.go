@@ -2,8 +2,6 @@ package oops
 
 import (
 	"context"
-
-	"github.com/samber/lo"
 )
 
 // coalesceOrEmpty returns the first non-zero value from the provided arguments,
@@ -18,10 +16,7 @@ import (
 //	result := coalesceOrEmpty("", "default", "fallback") // returns "default"
 //	result := coalesceOrEmpty(0, 42, 100)               // returns 42
 //	result := coalesceOrEmpty("", "", "")               // returns ""
-func coalesceOrEmpty[T comparable](v ...T) T {
-	result, _ := lo.Coalesce(v...)
-	return result
-}
+func coalesceOrEmpty[T comparable](v ...T) T { _ = "STUB: not implemented"; return *new(T) }
 
 // contextValueOrNil safely extracts a value from a Go context, handling
 // nil contexts and nil values appropriately.
@@ -45,15 +40,4 @@ func coalesceOrEmpty[T comparable](v ...T) T {
 //
 //	// Safe even with nil context
 //	value := contextValueOrNil(nil, "key") // returns nil
-func contextValueOrNil(ctx context.Context, k any) any {
-	if ctx == nil {
-		return nil
-	}
-
-	v := ctx.Value(k)
-	if v == nil {
-		return nil
-	}
-
-	return v
-}
+func contextValueOrNil(ctx context.Context, k any) any { _ = "STUB: not implemented"; return *new(any) }

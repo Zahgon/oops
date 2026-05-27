@@ -17,7 +17,6 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 )
 
 var goPathDirs = func() []string {
@@ -58,20 +57,9 @@ var goPathDirs = func() []string {
 //	path := "/usr/local/bin/program"
 //	clean := removeGoPath(path)
 //	// Result: "/usr/local/bin/program" (unchanged)
-func removeGoPath(path string) string {
-	return removeGoPathDirs(path, goPathDirs)
-}
+func removeGoPath(path string) string { _ = "STUB: not implemented"; return "" }
 
-func removeGoPathDirs(path string, dirs []string) string {
-	for _, dir := range dirs {
-		srcdir := filepath.Join(dir, "src")
-		rel, err := filepath.Rel(srcdir, path)
-		if err == nil && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
-			return rel
-		}
-	}
-	return path
-}
+func removeGoPathDirs(path string, dirs []string) string { _ = "STUB: not implemented"; return "" }
 
 // longestFirst is a custom sort.Interface implementation that sorts
 // strings in decreasing order by length (longest first). This is used
@@ -89,11 +77,15 @@ func removeGoPathDirs(path string, dirs []string) string {
 type longestFirst []string
 
 // Len returns the number of strings in the slice.
-func (strs longestFirst) Len() int { return len(strs) }
+func (strs longestFirst) Len() int {
+	_ = "STUB: not implemented"
 
-// Less returns true if the string at index i is longer than the string
-// at index j. This implements the "longest first" sorting order.
-func (strs longestFirst) Less(i, j int) bool { return len(strs[i]) > len(strs[j]) }
+	// Less returns true if the string at index i is longer than the string
+	// at index j. This implements the "longest first" sorting order.
+	return 0
+}
+
+func (strs longestFirst) Less(i, j int) bool { _ = "STUB: not implemented"; return false }
 
 // Swap exchanges the strings at indices i and j.
-func (strs longestFirst) Swap(i, j int) { strs[i], strs[j] = strs[j], strs[i] }
+func (strs longestFirst) Swap(i, j int) { _ = "STUB: not implemented"; return }

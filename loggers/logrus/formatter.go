@@ -1,8 +1,6 @@
 package oopslogrus
 
 import (
-	"errors"
-
 	"github.com/samber/oops"
 	"github.com/sirupsen/logrus"
 )
@@ -25,13 +23,8 @@ import (
 //	logger.SetFormatter(oopslogrus.NewOopsFormatter(nil))
 //	logger.WithError(err).Error("operation failed")
 func NewOopsFormatter(secondaryFormatter logrus.Formatter) *oopsFormatter {
-	if secondaryFormatter == nil {
-		secondaryFormatter = logrus.StandardLogger().Formatter
-	}
-
-	return &oopsFormatter{
-		formatter: secondaryFormatter,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // oopsFormatter implements logrus.Formatter to provide enhanced
@@ -60,27 +53,20 @@ type oopsFormatter struct {
 //
 // Thread Safety: This method is thread-safe and can be called concurrently.
 func (f *oopsFormatter) Format(entry *logrus.Entry) ([]byte, error) {
+	_ = "STUB: not implemented"
 	// Check if the log entry contains an error field
-	errField, ok := entry.Data["error"]
-	if ok {
-		switch err := errField.(type) {
-		case error:
-			// Try to extract oops error information
-			var oopsError oops.OopsError
-			if errors.As(err, &oopsError) {
-				// Enhance the log entry with oops error data
-				oopsErrorToEntryData(&oopsError, entry)
-			}
-		case any:
-			// Handle non-error types in the error field
-			// This case is included for completeness but typically
-			// the error field should contain actual error instances
-		}
-	}
-
-	// Delegate to the underlying formatter for final formatting
-	return f.formatter.Format(entry)
+	return nil, nil
 }
+
+// Try to extract oops error information
+
+// Enhance the log entry with oops error data
+
+// Handle non-error types in the error field
+// This case is included for completeness but typically
+// the error field should contain actual error instances
+
+// Delegate to the underlying formatter for final formatting
 
 // oopsErrorToEntryData extracts error information from an oops.OopsError
 // and adds it to a logrus.Entry for enhanced logging.
@@ -94,35 +80,22 @@ func (f *oopsFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 // which may have some overhead for errors with large amounts of context
 // or metadata.
 func oopsErrorToEntryData(err *oops.OopsError, entry *logrus.Entry) {
+	_ = "STUB: not implemented"
 	// Update the log entry timestamp with the error timestamp
 	// This ensures that the log entry reflects when the error actually occurred
-	entry.Time = err.Time()
-
-	// Convert the error to a map representation containing all error data
-	payload := err.ToMap()
-
-	// Conditionally remove stack traces and source code fragments for non-error levels
-	// This helps reduce log noise for informational and warning messages while
-	// preserving detailed debugging information for actual errors
-	if entry.Level < logrus.ErrorLevel {
-		delete(payload, "stacktrace")
-		delete(payload, "sources")
-	}
-
-	// Create a new map for the entry's data
-	newData := make(logrus.Fields, len(entry.Data)+len(payload))
-
-	// Copy the original data
-	for k, v := range entry.Data {
-		newData[k] = v
-	}
-
-	// Add all error data to the log entry
-	// This includes context, metadata, user information, timing, and other
-	// error attributes that were captured when the error was created
-	for k, v := range payload {
-		newData[k] = v
-	}
-
-	entry.Data = newData
+	return
 }
+
+// Convert the error to a map representation containing all error data
+
+// Conditionally remove stack traces and source code fragments for non-error levels
+// This helps reduce log noise for informational and warning messages while
+// preserving detailed debugging information for actual errors
+
+// Create a new map for the entry's data
+
+// Copy the original data
+
+// Add all error data to the log entry
+// This includes context, metadata, user information, timing, and other
+// error attributes that were captured when the error was created

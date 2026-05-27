@@ -43,43 +43,50 @@ package oops
 //	    return user, nil
 //	}
 func Wrap2[A any](a A, err error) (A, error) {
-	return a, Wrap(err)
+	_ = "STUB: not implemented"
+	return *
+
+	// Wrap3 wraps an error while preserving two return values.
+	// This function is useful for functions that return (value1, value2, error)
+	// and need the error to be wrapped with oops error handling.
+	//
+	// The function takes two values of any types A and B and an error, wraps
+	// the error using oops.Wrap, and returns the original values along with
+	// the wrapped error.
+	//
+	// Example usage:
+	//
+	//	func getUserAndProfile(id string) (User, Profile, error) {
+	//	    user, profile, err := database.GetUserAndProfile(id)
+	//	    return oops.Wrap3(user, profile, err)
+	//	}
+	new(A), nil
 }
 
-// Wrap3 wraps an error while preserving two return values.
-// This function is useful for functions that return (value1, value2, error)
-// and need the error to be wrapped with oops error handling.
-//
-// The function takes two values of any types A and B and an error, wraps
-// the error using oops.Wrap, and returns the original values along with
-// the wrapped error.
-//
-// Example usage:
-//
-//	func getUserAndProfile(id string) (User, Profile, error) {
-//	    user, profile, err := database.GetUserAndProfile(id)
-//	    return oops.Wrap3(user, profile, err)
-//	}
 func Wrap3[A any, B any](a A, b B, err error) (A, B, error) {
-	return a, b, Wrap(err)
+	_ = "STUB: not implemented"
+	return *
+
+	// Wrap4 wraps an error while preserving three return values.
+	// This function is useful for functions that return (value1, value2, value3, error)
+	// and need the error to be wrapped with oops error handling.
+	//
+	// The function takes three values of any types A, B, and C and an error,
+	// wraps the error using oops.Wrap, and returns the original values along
+	// with the wrapped error.
+	//
+	// Example usage:
+	//
+	//	func getUserProfileAndSettings(id string) (User, Profile, Settings, error) {
+	//	    user, profile, settings, err := database.GetUserProfileAndSettings(id)
+	//	    return oops.Wrap4(user, profile, settings, err)
+	//	}
+	new(A), *new(B), nil
 }
 
-// Wrap4 wraps an error while preserving three return values.
-// This function is useful for functions that return (value1, value2, value3, error)
-// and need the error to be wrapped with oops error handling.
-//
-// The function takes three values of any types A, B, and C and an error,
-// wraps the error using oops.Wrap, and returns the original values along
-// with the wrapped error.
-//
-// Example usage:
-//
-//	func getUserProfileAndSettings(id string) (User, Profile, Settings, error) {
-//	    user, profile, settings, err := database.GetUserProfileAndSettings(id)
-//	    return oops.Wrap4(user, profile, settings, err)
-//	}
 func Wrap4[A any, B any, C any](a A, b B, c C, err error) (A, B, C, error) {
-	return a, b, c, Wrap(err)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), nil
 }
 
 // Wrap5 wraps an error while preserving four return values.
@@ -90,7 +97,8 @@ func Wrap4[A any, B any, C any](a A, b B, c C, err error) (A, B, C, error) {
 // wraps the error using oops.Wrap, and returns the original values along
 // with the wrapped error.
 func Wrap5[A any, B any, C any, D any](a A, b B, c C, d D, err error) (A, B, C, D, error) {
-	return a, b, c, d, Wrap(err)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), nil
 }
 
 // Wrap6 wraps an error while preserving five return values.
@@ -101,7 +109,8 @@ func Wrap5[A any, B any, C any, D any](a A, b B, c C, d D, err error) (A, B, C, 
 // wraps the error using oops.Wrap, and returns the original values along
 // with the wrapped error.
 func Wrap6[A any, B any, C any, D any, E any](a A, b B, c C, d D, e E, err error) (A, B, C, D, E, error) {
-	return a, b, c, d, e, Wrap(err)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), *new(E), nil
 }
 
 // Wrap7 wraps an error while preserving six return values.
@@ -112,7 +121,8 @@ func Wrap6[A any, B any, C any, D any, E any](a A, b B, c C, d D, e E, err error
 // wraps the error using oops.Wrap, and returns the original values along
 // with the wrapped error.
 func Wrap7[A any, B any, C any, D any, E any, F any](a A, b B, c C, d D, e E, f F, err error) (A, B, C, D, E, F, error) {
-	return a, b, c, d, e, f, Wrap(err)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), *new(E), *new(F), nil
 }
 
 // Wrap8 wraps an error while preserving seven return values.
@@ -123,7 +133,8 @@ func Wrap7[A any, B any, C any, D any, E any, F any](a A, b B, c C, d D, e E, f 
 // wraps the error using oops.Wrap, and returns the original values along
 // with the wrapped error.
 func Wrap8[A any, B any, C any, D any, E any, F any, G any](a A, b B, c C, d D, e E, f F, g G, err error) (A, B, C, D, E, F, G, error) {
-	return a, b, c, d, e, f, g, Wrap(err)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), *new(E), *new(F), *new(G), nil
 }
 
 // Wrap9 wraps an error while preserving eight return values.
@@ -134,7 +145,8 @@ func Wrap8[A any, B any, C any, D any, E any, F any, G any](a A, b B, c C, d D, 
 // wraps the error using oops.Wrap, and returns the original values along
 // with the wrapped error.
 func Wrap9[A any, B any, C any, D any, E any, F any, G any, H any](a A, b B, c C, d D, e E, f F, g G, h H, err error) (A, B, C, D, E, F, G, H, error) {
-	return a, b, c, d, e, f, g, h, Wrap(err)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), *new(E), *new(F), *new(G), *new(H), nil
 }
 
 // Wrap10 wraps an error while preserving nine return values.
@@ -145,7 +157,8 @@ func Wrap9[A any, B any, C any, D any, E any, F any, G any, H any](a A, b B, c C
 // wraps the error using oops.Wrap, and returns the original values along
 // with the wrapped error.
 func Wrap10[A any, B any, C any, D any, E any, F any, G any, H any, I any](a A, b B, c C, d D, e E, f F, g G, h H, i I, err error) (A, B, C, D, E, F, G, H, I, error) {
-	return a, b, c, d, e, f, g, h, i, Wrap(err)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), *new(E), *new(F), *new(G), *new(H), *new(I), nil
 }
 
 // Wrapf2 wraps an error with a formatted message while preserving a single return value.
@@ -163,7 +176,8 @@ func Wrap10[A any, B any, C any, D any, E any, F any, G any, H any, I any](a A, 
 //	    return oops.Wrapf2(user, err, "failed to get user with id %s", id)
 //	}
 func Wrapf2[A any](a A, err error, format string, args ...any) (A, error) {
-	return a, Wrapf(err, format, args...)
+	_ = "STUB: not implemented"
+	return *new(A), nil
 }
 
 // Wrapf3 wraps an error with a formatted message while preserving two return values.
@@ -181,7 +195,8 @@ func Wrapf2[A any](a A, err error, format string, args ...any) (A, error) {
 //	    return oops.Wrapf3(user, profile, err, "failed to get user and profile for id %s", id)
 //	}
 func Wrapf3[A any, B any](a A, b B, err error, format string, args ...any) (A, B, error) {
-	return a, b, Wrapf(err, format, args...)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), nil
 }
 
 // Wrapf4 wraps an error with a formatted message while preserving three return values.
@@ -192,7 +207,8 @@ func Wrapf3[A any, B any](a A, b B, err error, format string, args ...any) (A, B
 // string with arguments, wraps the error using oops.Wrapf, and returns the original
 // values along with the wrapped error.
 func Wrapf4[A any, B any, C any](a A, b B, c C, err error, format string, args ...any) (A, B, C, error) {
-	return a, b, c, Wrapf(err, format, args...)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), nil
 }
 
 // Wrapf5 wraps an error with a formatted message while preserving four return values.
@@ -203,7 +219,8 @@ func Wrapf4[A any, B any, C any](a A, b B, c C, err error, format string, args .
 // string with arguments, wraps the error using oops.Wrapf, and returns the original
 // values along with the wrapped error.
 func Wrapf5[A any, B any, C any, D any](a A, b B, c C, d D, err error, format string, args ...any) (A, B, C, D, error) {
-	return a, b, c, d, Wrapf(err, format, args...)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), nil
 }
 
 // Wrapf6 wraps an error with a formatted message while preserving five return values.
@@ -214,7 +231,8 @@ func Wrapf5[A any, B any, C any, D any](a A, b B, c C, d D, err error, format st
 // string with arguments, wraps the error using oops.Wrapf, and returns the original
 // values along with the wrapped error.
 func Wrapf6[A any, B any, C any, D any, E any](a A, b B, c C, d D, e E, err error, format string, args ...any) (A, B, C, D, E, error) {
-	return a, b, c, d, e, Wrapf(err, format, args...)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), *new(E), nil
 }
 
 // Wrapf7 wraps an error with a formatted message while preserving six return values.
@@ -225,7 +243,8 @@ func Wrapf6[A any, B any, C any, D any, E any](a A, b B, c C, d D, e E, err erro
 // string with arguments, wraps the error using oops.Wrapf, and returns the original
 // values along with the wrapped error.
 func Wrapf7[A any, B any, C any, D any, E any, F any](a A, b B, c C, d D, e E, f F, err error, format string, args ...any) (A, B, C, D, E, F, error) {
-	return a, b, c, d, e, f, Wrapf(err, format, args...)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), *new(E), *new(F), nil
 }
 
 // Wrapf8 wraps an error with a formatted message while preserving seven return values.
@@ -236,7 +255,8 @@ func Wrapf7[A any, B any, C any, D any, E any, F any](a A, b B, c C, d D, e E, f
 // string with arguments, wraps the error using oops.Wrapf, and returns the original
 // values along with the wrapped error.
 func Wrapf8[A any, B any, C any, D any, E any, F any, G any](a A, b B, c C, d D, e E, f F, g G, err error, format string, args ...any) (A, B, C, D, E, F, G, error) {
-	return a, b, c, d, e, f, g, Wrapf(err, format, args...)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), *new(E), *new(F), *new(G), nil
 }
 
 // Wrapf9 wraps an error with a formatted message while preserving eight return values.
@@ -247,7 +267,8 @@ func Wrapf8[A any, B any, C any, D any, E any, F any, G any](a A, b B, c C, d D,
 // string with arguments, wraps the error using oops.Wrapf, and returns the original
 // values along with the wrapped error.
 func Wrapf9[A any, B any, C any, D any, E any, F any, G any, H any](a A, b B, c C, d D, e E, f F, g G, h H, err error, format string, args ...any) (A, B, C, D, E, F, G, H, error) {
-	return a, b, c, d, e, f, g, h, Wrapf(err, format, args...)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), *new(E), *new(F), *new(G), *new(H), nil
 }
 
 // Wrapf10 wraps an error with a formatted message while preserving nine return values.
@@ -258,5 +279,6 @@ func Wrapf9[A any, B any, C any, D any, E any, F any, G any, H any](a A, b B, c 
 // string with arguments, wraps the error using oops.Wrapf, and returns the original
 // values along with the wrapped error.
 func Wrapf10[A any, B any, C any, D any, E any, F any, G any, H any, I any](a A, b B, c C, d D, e E, f F, g G, h H, i I, err error, format string, args ...any) (A, B, C, D, E, F, G, H, I, error) {
-	return a, b, c, d, e, f, g, h, i, Wrapf(err, format, args...)
+	_ = "STUB: not implemented"
+	return *new(A), *new(B), *new(C), *new(D), *new(E), *new(F), *new(G), *new(H), *new(I), nil
 }

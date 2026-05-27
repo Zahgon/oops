@@ -1,11 +1,7 @@
 package oops
 
 import (
-	"fmt"
 	"reflect"
-	"runtime"
-	"slices"
-	"strings"
 
 	"github.com/samber/lo"
 )
@@ -86,14 +82,7 @@ type oopsStacktraceFrame struct {
 //
 //	"main.go:42 main()"
 //	"handler.go:15 processRequest()"
-func (frame *oopsStacktraceFrame) String() string {
-	currentFrame := fmt.Sprintf("%v:%v", frame.file, frame.line)
-	if frame.function != "" {
-		currentFrame = fmt.Sprintf("%v:%v %v()", frame.file, frame.line, frame.function)
-	}
-
-	return currentFrame
-}
+func (frame *oopsStacktraceFrame) String() string { _ = "STUB: not implemented"; return "" }
 
 // oopsStacktrace represents a complete stack trace with multiple frames.
 // It contains a span identifier for correlation and an ordered list
@@ -105,9 +94,7 @@ type oopsStacktrace struct {
 
 // Error implements the error interface for stack traces.
 // This allows stack traces to be used directly as errors if needed.
-func (st *oopsStacktrace) Error() string {
-	return st.String("")
-}
+func (st *oopsStacktrace) Error() string { _ = "STUB: not implemented"; return "" }
 
 // String returns a formatted string representation of the complete stack trace.
 // The output includes all frames in the stack trace, formatted with proper
@@ -122,37 +109,13 @@ func (st *oopsStacktrace) Error() string {
 //	"  --- at main.go:42 main()
 //	   --- at handler.go:15 processRequest()
 //	   --- at server.go:123 handleHTTP()"
-func (st *oopsStacktrace) String(deepestFrame string) string {
-	var str strings.Builder
+func (st *oopsStacktrace) String(deepestFrame string) string { _ = "STUB: not implemented"; return "" }
 
-	// Helper function to add newlines between frames
-	newline := func() {
-		if str.Len() != 0 {
-			tmpStr := str.String()
-			if tmpStr[len(tmpStr)-1] != '\n' {
-				str.WriteRune('\n')
-			}
-		}
-	}
+// Helper function to add newlines between frames
 
-	// Iterate through all frames and format them
-	for _, frame := range st.frames {
-		if frame.file != "" {
-			currentFrame := frame.String()
+// Iterate through all frames and format them
 
-			// Stop if we've reached the deepest frame to avoid duplication
-			if currentFrame == deepestFrame {
-				break
-			}
-
-			newline()
-			str.WriteString("  --- at ")
-			str.WriteString(currentFrame)
-		}
-	}
-
-	return str.String()
-}
+// Stop if we've reached the deepest frame to avoid duplication
 
 // Source returns the source code context for the first frame in the stack trace.
 // This method provides both a header (file:line function()) and the actual
@@ -169,18 +132,7 @@ func (st *oopsStacktrace) String(deepestFrame string) string {
 // Returns:
 //   - header: Formatted string like "main.go:42 main()"
 //   - body: Slice of strings containing source code lines with line numbers
-func (st *oopsStacktrace) Source() (string, []string) {
-	if len(st.frames) == 0 {
-		return "", []string{}
-	}
-
-	firstFrame := st.frames[0]
-
-	header := firstFrame.String()
-	body := getSourceFromFrame(firstFrame)
-
-	return header, body
-}
+func (st *oopsStacktrace) Source() (string, []string) { _ = "STUB: not implemented"; return "", nil }
 
 // newStacktrace creates a new stack trace by capturing the current call stack.
 // This function walks up the call stack starting from the caller of this
@@ -203,62 +155,29 @@ func (st *oopsStacktrace) Source() (string, []string) {
 //	fmt.Println(stack.String(""))
 //
 // @TODO: filtering should be done lazily, not at creation time.
-func newStacktrace(span string, skip int) *oopsStacktrace {
-	frames := make([]oopsStacktraceFrame, 0, StackTraceMaxDepth)
+func newStacktrace(span string, skip int) *oopsStacktrace { _ = "STUB: not implemented"; return nil }
 
-	// Capture all program counters in a single batch call.
-	// The buffer must be large enough to hold the desired user frames PLUS the
-	// oops-internal and runtime frames that will be filtered out during iteration.
-	// Cap at 512 to avoid huge allocations when StackTraceMaxDepth is set to a
-	// very large value.
-	bufSize := min(StackTraceMaxDepth*3+20, 512)
-	pcs := make([]uintptr, bufSize)
-	n := runtime.Callers(1+skip, pcs)
-	pcs = pcs[:n]
+// Capture all program counters in a single batch call.
+// The buffer must be large enough to hold the desired user frames PLUS the
+// oops-internal and runtime frames that will be filtered out during iteration.
+// Cap at 512 to avoid huge allocations when StackTraceMaxDepth is set to a
+// very large value.
 
-	// Define package name patterns for filtering (computed once, outside the loop)
-	packageNameExamples := packageName + "/examples/"
-	goroot := runtime.GOROOT()
+// Define package name patterns for filtering (computed once, outside the loop)
 
-	// Iterate over the captured frames
-	iter := runtime.CallersFrames(pcs)
-	for len(frames) < StackTraceMaxDepth {
-		frame, more := iter.Next()
+// Iterate over the captured frames
 
-		// Clean up the file path by removing Go path prefixes
-		file := removeGoPath(frame.File)
+// Clean up the file path by removing Go path prefixes
 
-		// Extract a short, readable function name
-		function := shortFuncName(frame.Function)
+// Extract a short, readable function name
 
-		// Apply frame filtering logic
-		isGoPkg := len(goroot) > 0 && strings.Contains(file, goroot) // skip frames in GOROOT if it's set
-		isOopsPkg := strings.Contains(file, packageName)             // skip frames in this package
-		isExamplePkg := strings.Contains(file, packageNameExamples)  // do not skip frames in this package examples
-		isTestPkg := strings.Contains(file, "_test.go")              // do not skip frames in tests
+// Apply frame filtering logic
+// skip frames in GOROOT if it's set
+// skip frames in this package
+// do not skip frames in this package examples
+// do not skip frames in tests
 
-		// Include frame if it passes all filtering criteria
-		if !isGoPkg && (!isOopsPkg || isExamplePkg || isTestPkg) {
-			frames = append(frames, oopsStacktraceFrame{
-				pc:          frame.PC,
-				file:        file,
-				function:    function,
-				line:        frame.Line,
-				rawFile:     frame.File,
-				rawFunction: frame.Function,
-			})
-		}
-
-		if !more {
-			break
-		}
-	}
-
-	return &oopsStacktrace{
-		span:   span,
-		frames: frames,
-	}
-}
+// Include frame if it passes all filtering criteria
 
 // shortFuncName extracts a short, readable function name from a full function
 // name string (as returned by runtime.Frame.Function). This function processes
@@ -276,100 +195,44 @@ func newStacktrace(span string, skip int) *oopsStacktrace {
 //	"main.main" -> "main"
 //	"github.com/user/pkg.helper" -> "helper"
 func shortFuncName(longName string) string {
+	_ = "STUB: not implemented"
 	// longName is the full function name including package path
 	// Examples of possible formats:
 	// - "github.com/palantir/shield/package.FuncName"
 	// - "github.com/palantir/shield/package.Receiver.MethodName"
 	// - "github.com/palantir/shield/package.(*PtrReceiver).MethodName"
-
-	// Remove the package path by finding the last "/" and taking everything after it
-	withoutPath := longName[strings.LastIndex(longName, "/")+1:]
-
-	// Remove the package name by finding the first "." and taking everything after it
-	withoutPackage := withoutPath[strings.Index(withoutPath, ".")+1:]
-
-	// Clean up the function name by removing parentheses and asterisks
-	// that are part of pointer receiver syntax
-	shortName := withoutPackage
-	shortName = strings.Replace(shortName, "(", "", 1) // Remove opening parenthesis
-	shortName = strings.Replace(shortName, "*", "", 1) // Remove asterisk
-	shortName = strings.Replace(shortName, ")", "", 1) // Remove closing parenthesis
-
-	return shortName
+	return ""
 }
+
+// Remove the package path by finding the last "/" and taking everything after it
+
+// Remove the package name by finding the first "." and taking everything after it
+
+// Clean up the function name by removing parentheses and asterisks
+// that are part of pointer receiver syntax
+
+// Remove opening parenthesis
+// Remove asterisk
+// Remove closing parenthesis
 
 // applyFrameSkip returns a copy of frames with any entries matching framesSkip patterns removed.
 // Matching uses strings.Contains against the raw runtime.CallersFrames values stored in
 // rawFile and rawFunction. An empty pattern field is a wildcard (matches anything).
 func applyFrameSkip(frames []oopsStacktraceFrame) []oopsStacktraceFrame {
-	if len(framesSkip) == 0 {
-		return frames
-	}
-	filtered := make([]oopsStacktraceFrame, 0, len(frames))
-	for _, f := range frames {
-		skip := false
-		for _, pattern := range framesSkip {
-			fileMatch := pattern.file == "" || strings.Contains(f.rawFile, pattern.file)
-			funcMatch := pattern.function == "" || strings.Contains(f.rawFunction, pattern.function)
-			if fileMatch && funcMatch {
-				skip = true
-				break
-			}
-		}
-		if !skip {
-			filtered = append(filtered, f)
-		}
-	}
-	return filtered
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func framesToStacktraceBlocks(blocks []lo.Tuple3[error, string, []oopsStacktraceFrame]) []string {
-	output := make([]string, 0, len(blocks))
-	shownFrames := make(map[string]bool)
-
-	for _, e := range blocks {
-		err := lo.TernaryF(e.A != nil, func() string { return e.A.Error() }, func() string { return "" })
-		msg := coalesceOrEmpty(e.B, err, "Error")
-
-		// Build stacktrace for this error, avoiding already shown frames
-		var frameLines []string
-		firstFrame := true // we always show the first frame, because the PC of a recursive function might appear multiple time.
-		for _, frame := range e.C {
-			frameStr := frame.String()
-			if !shownFrames[frameStr] || firstFrame {
-				frameLines = append(frameLines, "  --- at "+frame.String())
-				shownFrames[frameStr] = true
-			}
-			firstFrame = false
-		}
-
-		stacktraceStr := strings.Join(frameLines, "\n")
-		block := fmt.Sprintf("%s\n%s", msg, stacktraceStr)
-
-		output = append(output, block)
-	}
-
-	slices.Reverse(output)
-	return output
+	_ = "STUB: not implemented"
+	return nil
 }
 
+// Build stacktrace for this error, avoiding already shown frames
+
+// we always show the first frame, because the PC of a recursive function might appear multiple time.
+
 func framesToSourceBlocks(blocks []lo.Tuple2[string, *oopsStacktrace]) []string {
-	output := [][]string{}
-
-	for _, e := range blocks {
-		header, body := e.B.Source()
-
-		if e.A != "" {
-			header = fmt.Sprintf("%s\n%s", e.A, header)
-		}
-
-		if header != "" && len(body) > 0 {
-			output = append(output, append([]string{header}, body...))
-		}
-	}
-
-	slices.Reverse(output)
-	return lo.Map(output, func(items []string, _ int) string {
-		return strings.Join(items, "\n")
-	})
+	_ = "STUB: not implemented"
+	return nil
 }

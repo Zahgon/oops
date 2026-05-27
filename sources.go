@@ -1,12 +1,7 @@
 package oops
 
 import (
-	"fmt"
-	"os"
-	"strings"
 	"sync"
-
-	"github.com/samber/lo"
 )
 
 ///
@@ -81,37 +76,19 @@ const (
 //	  }
 //	}
 func readFileWithCache(path string) ([]string, bool) {
+	_ = "STUB: not implemented"
 	// First, try to read from cache using a read lock
-	mutex.RLock()
-	lines, ok := cache[path]
-	mutex.RUnlock()
-
-	if ok {
-		return lines, true
-	}
-
-	// Only process .go files to avoid unnecessary I/O
-	if !strings.HasSuffix(path, ".go") {
-		return nil, false
-	}
-
-	// Read the file from disk (this operation is not cached)
-	// bearer:disable go_gosec_filesystem_filereadtaint
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return nil, false
-	}
-
-	// Split the file content into lines
-	lines = strings.Split(string(b), "\n")
-
-	// Store the result in cache using a write lock
-	mutex.Lock()
-	cache[path] = lines
-	mutex.Unlock()
-
-	return lines, true
+	return nil, false
 }
+
+// Only process .go files to avoid unnecessary I/O
+
+// Read the file from disk (this operation is not cached)
+// bearer:disable go_gosec_filesystem_filereadtaint
+
+// Split the file content into lines
+
+// Store the result in cache using a write lock
 
 // getSourceFromFrame extracts source code fragments around a specific
 // line in a file, providing context for debugging error locations.
@@ -142,52 +119,26 @@ func readFileWithCache(path string) ([]string, bool) {
 //	45	    return nil
 //	46	}
 func getSourceFromFrame(frame oopsStacktraceFrame) []string {
+	_ = "STUB: not implemented"
 	// Read the source file with caching
-	lines, ok := readFileWithCache(frame.file)
-	if !ok {
-		return []string{}
-	}
-
-	// Validate that the requested line number is within bounds
-	if len(lines) < frame.line {
-		return []string{}
-	}
-
-	// Calculate the range of lines to extract
-	current := frame.line - 1 // Convert to 0-based index
-	start := lo.Max([]int{0, current - nbrLinesBefore})
-	end := lo.Min([]int{len(lines) - 1, current + nbrLinesAfter})
-
-	output := []string{}
-
-	// Extract and format each line in the range
-	for i := start; i <= end; i++ {
-		if i < 0 || i >= len(lines) {
-			continue
-		}
-
-		line := lines[i]
-
-		// Format the line with line number
-		message := fmt.Sprintf("%d\t%s", i+1, line)
-		output = append(output, message)
-
-		// Add visual indicator for the error line
-		if i == current {
-			// Calculate the position of the first non-whitespace character
-			lenWithoutLeadingSpaces := len(strings.TrimLeft(line, " \t"))
-			lenLeadingSpaces := len(line) - lenWithoutLeadingSpaces
-
-			// Handle tab characters properly (tabs are typically 8 characters wide)
-			nbrTabs := strings.Count(line[0:lenLeadingSpaces], "\t")
-			firstCharIndex := lenLeadingSpaces + (8-1)*nbrTabs // 8 chars per tab
-
-			// Create the visual indicator line
-			sublinePrefix := strings.Repeat(" ", firstCharIndex)
-			subline := strings.Repeat("^", lenWithoutLeadingSpaces)
-			output = append(output, "\t"+sublinePrefix+subline)
-		}
-	}
-
-	return output
+	return nil
 }
+
+// Validate that the requested line number is within bounds
+
+// Calculate the range of lines to extract
+// Convert to 0-based index
+
+// Extract and format each line in the range
+
+// Format the line with line number
+
+// Add visual indicator for the error line
+
+// Calculate the position of the first non-whitespace character
+
+// Handle tab characters properly (tabs are typically 8 characters wide)
+
+// 8 chars per tab
+
+// Create the visual indicator line
